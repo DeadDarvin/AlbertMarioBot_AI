@@ -1,7 +1,6 @@
-
+let tg = window.Telegram.WebApp;
 tg.expand()
 
-let tg = window.Telegram.WebApp;
 let mario = document.getElementById("mario_id");
 let albert = document.getElementById("albert_id");
 
