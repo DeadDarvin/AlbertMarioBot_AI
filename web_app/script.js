@@ -4,11 +4,16 @@ tg.expand()
 let mario = document.getElementById("mario_id");
 let albert = document.getElementById("albert_id");
 
+
+function changeBackColor (element, color) {
+    element.style.backgroundColor = color
+}
+
 mario.addEventListener("click", () => {
     console.log("Mario")
-    event.target.style.backgroundColor = 'Aero';
+    changeBackColor(mario, "#7CB9E8")
     let data = {
-        user_id: tga.InitDataUnsafe.user.user_id,
+        user_id: tg.InitDataUnsafe.user.id,
         person_id: 1
     }
     console.log(data)
@@ -18,9 +23,9 @@ mario.addEventListener("click", () => {
 
 albert.addEventListener("click", () => {
     console.log("Albert")
-    event.target.style.backgroundColor = 'Aero';
+    changeBackColor(albert, "#7CB9E8")
     let data = {
-        user_id: tg.InitDataUnsafe.user.user_id,
+        user_id: tg.InitDataUnsafe.user.id,
         person_id: 2
     }
     console.log(data)
