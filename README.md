@@ -26,3 +26,8 @@ Test task from MindFusion. Bot for talking with Mario or Albert Einstein persons
 
 ### 4. /menu:
 1. Отправляем кнопку для перевыбора персонажа (на WebApp)
+
+
+## Идеи:
+1. Хранить user_person не в таблицы юзера, а сделать отдельную (типа ManyToMany с ограничениями). Насколько нужно?
+2. Прикрутить redis {"user_id": "person"} для оптимизации
