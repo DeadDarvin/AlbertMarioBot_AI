@@ -4,7 +4,7 @@ from aiogram.types import WebAppInfo
 
 
 web_app = WebAppInfo(
-    url="https://raw.githubusercontent.com/DeadDarvin/AlbertMarioBot_AI/web_app/web_app/web_app.html"
+    url="https://deaddarvin.github.io/AlbertMarioBot_AI/web_app/web_app.html"
 )
 
 start_markup_buttons = [
