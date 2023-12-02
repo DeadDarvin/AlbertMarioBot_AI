@@ -7,7 +7,10 @@ from aiogram import Dispatcher
 from aiogram import types
 from aiogram.enums import ParseMode
 from aiogram.filters import CommandStart
+from aiogram.types import InlineKeyboardButton
+from aiogram.types import InlineKeyboardMarkup
 from aiogram.types import Message
+from aiogram.types import WebAppInfo
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from db.dals import UserDAL
@@ -51,7 +54,14 @@ async def command_start_handler(message: Message) -> None:
     await register_new_user_if_does_not_exists(
         user.id, user.username, user.first_name, user.last_name
     )
-    await message.answer("Hello, man!")
+    keyboards = []
+    web_app = WebAppInfo(url="https://ya.ru")
+    buttons = [
+        InlineKeyboardButton(text="Выбери, с кем хочешь общаться", web_app=web_app),
+    ]
+    keyboards.append(buttons)
+    markup = InlineKeyboardMarkup(inline_keyboard=keyboards)
+    await message.answer("Hello, man!", reply_markup=markup)
 
 
 @dp.message()
