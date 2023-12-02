@@ -17,10 +17,12 @@ body {
 
 .main-container {
     display: inline-block;
+    padding: 100px 100px;
 }
 
 .person {
     margin-bottom: 50px;
+    cursor: pointer;
 }
 
 .person p {
