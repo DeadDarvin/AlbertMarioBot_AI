@@ -6,7 +6,7 @@ from aiogram.types import WebAppInfo
 web_app = WebAppInfo(url="https://ya.ru")
 
 start_markup_buttons = [
-    InlineKeyboardButton(text="Выбери, с кем хочешь общаться", web_app=web_app),
+    InlineKeyboardButton(text="Выбрать", web_app=web_app),
 ]
 start_keyboard_schema = [
     start_markup_buttons,

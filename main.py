@@ -13,6 +13,7 @@ from db.dals import UserDAL
 from db.session import into_new_async_session
 from keyboards import START_MARKUP
 from settings import BOT_TOKEN
+from texts import START_TEXT
 
 
 dp = Dispatcher()
@@ -51,7 +52,7 @@ async def command_start_handler(message: Message) -> None:
     await register_new_user_if_does_not_exists(
         user.id, user.username, user.first_name, user.last_name
     )
-    await message.answer("Hello, man!", reply_markup=START_MARKUP)
+    await message.answer(START_TEXT, reply_markup=START_MARKUP)
 
 
 async def main() -> None:
