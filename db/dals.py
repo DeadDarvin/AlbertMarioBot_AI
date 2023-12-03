@@ -2,6 +2,7 @@ from sqlalchemy import select
 from sqlalchemy import update
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from db.models import Person
 from db.models import User
 
 
@@ -34,3 +35,12 @@ class UserDAL:
             .values(current_person_id=companion_id)
         )
         await self.session.execute(query)
+
+
+class PersonDAL:
+    def __init__(self, session: AsyncSession):
+        self.session = session
+
+    async def get_person_by_id(self, person_id: int) -> Person | None:
+        query = select(Person).where(Person.id == person_id)
+        return await self.session.scalar(query)

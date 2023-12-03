@@ -4,10 +4,12 @@ import hmac
 from urllib.parse import unquote
 
 import aiohttp_cors
+from aiohttp import ClientSession
 from aiohttp import web
 from aiohttp.web_response import json_response
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from db.dals import PersonDAL
 from db.dals import UserDAL
 from db.session import into_new_async_session
 from settings import BOT_TOKEN
@@ -54,6 +56,28 @@ async def change_user_companion(
         await user_dal.update_user_companion(telegram_id, person_id)
 
 
+async def get_first_message_by_id(session: AsyncSession, person_id: int) -> str:
+    async with session.begin():
+        person_dal = PersonDAL(session)
+        person = await person_dal.get_person_by_id(person_id)
+        return person.first_message_text
+
+
+@into_new_async_session
+async def send_first_companion_message(
+    session: AsyncSession, telegram_id: int, person_id: int
+):
+
+    companion_first_message = await get_first_message_by_id(session, person_id)
+    url = (
+        f"https://api.telegram.org/bot{BOT_TOKEN}"
+        f"/sendMessage?chat_id={telegram_id}&text={companion_first_message}"
+    )
+    async with ClientSession() as session:
+        async with session.get(url, ssl=False):
+            return
+
+
 @routes.post("/")
 async def web_app_data_handler(request):
     headers = request.headers
@@ -69,7 +93,7 @@ async def web_app_data_handler(request):
 
     data = await request.json()
     await change_user_companion(data["user_id"], data["person_id"])
-    # await send_first_companion_message(data["user_id"], data["person_id"])
+    await send_first_companion_message(data["user_id"], data["person_id"])
     return json_response(status=200, data={"success": True})
 
 
