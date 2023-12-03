@@ -6,7 +6,10 @@ from urllib.parse import unquote
 import aiohttp_cors
 from aiohttp import web
 from aiohttp.web_response import json_response
+from sqlalchemy.ext.asyncio import AsyncSession
 
+from db.dals import UserDAL
+from db.session import into_new_async_session
 from settings import BOT_TOKEN
 
 
@@ -42,6 +45,15 @@ def validate(hash_str, init_data, token, c_str="WebAppData"):
     return data_check.hexdigest() == hash_str
 
 
+@into_new_async_session
+async def change_user_companion(
+    session: AsyncSession, telegram_id: int, person_id: int
+):
+    async with session.begin():
+        user_dal = UserDAL(session)
+        await user_dal.update_user_companion(telegram_id, person_id)
+
+
 @routes.post("/")
 async def web_app_data_handler(request):
     headers = request.headers
@@ -55,8 +67,9 @@ async def web_app_data_handler(request):
             data={"success": False, "details": "Could not validate credentials!"},
         )
 
-    # data = await request.json()
-    # await moc_mark_user_person(data)
+    data = await request.json()
+    await change_user_companion(data["user_id"], data["person_id"])
+    # await send_first_companion_message(data["user_id"], data["person_id"])
     return json_response(status=200, data={"success": True})
 
 

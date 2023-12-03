@@ -1,4 +1,5 @@
 from sqlalchemy import select
+from sqlalchemy import update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from db.models import User
@@ -25,3 +26,11 @@ class UserDAL:
         )
         self.session.add(new_user)
         await self.session.flush()
+
+    async def update_user_companion(self, telegram_id: int, companion_id: int):
+        query = (
+            update(User)
+            .where(User.telegram_id == telegram_id)
+            .values(current_person_id=companion_id)
+        )
+        await self.session.execute(query)
