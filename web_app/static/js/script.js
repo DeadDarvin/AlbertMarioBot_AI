@@ -5,7 +5,7 @@ let user_id = tg.initDataUnsafe.user.id;
 
 const url = "https://9c1e-91-105-181-137.ngrok-free.app";
 const headers = {
-    'Content-Type': 'application/json'
+    'Content-Type': 'application/json',
     'Authorization': tg.initDataUnsafe.hash,
     'Init-Data': tg.initData
   };
