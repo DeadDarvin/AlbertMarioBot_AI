@@ -1,13 +1,13 @@
 let tg = window.Telegram.WebApp;
 tg.expand();
 
-let user_id = tg.initDataUnsafe.user.id;
-
+//let user_id = tg.initDataUnsafe.user.id;
+//
 const url = "https://9c1e-91-105-181-137.ngrok-free.app";
 const headers = {
-    'Content-Type': 'application/json',
-    'Authorization': tg.initDataUnsafe.hash,
-    'Init-Data': tg.initData
+    'Content-Type': 'application/json'
+//    'Authorization': tg.initDataUnsafe.hash,
+//    'Init-Data': tg.initData
   };
 
 let mario = document.getElementById("mario_id");
@@ -40,7 +40,7 @@ mario.addEventListener("click", () => {
     console.log("Mario")
     changeBackColor(mario, "#7CB9E8")
     let data = {
-        user_id: user_id,
+        user_id: "user_id",
         person_id: 1
     }
     console.log(data)
@@ -53,7 +53,7 @@ albert.addEventListener("click", () => {
     console.log("Albert")
     changeBackColor(albert, "#7CB9E8")
     let data = {
-        user_id: user_id,
+        user_id: "user_id",
         person_id: 2
     }
     console.log(data)
