@@ -55,3 +55,12 @@ class MessageDAL:
         new_message = UserMessage(request_text=message_text, user_id=user_id)
         self.session.add(new_message)
         await self.session.flush()
+        return new_message
+
+    async def update_message(self, message_id: int, message_response: str):
+        query = (
+            update(UserMessage)
+            .where(UserMessage.id == message_id)
+            .values(response_text=message_response)
+        )
+        await self.session.execute(query)

@@ -76,7 +76,8 @@ async def get_user_companion(
 async def save_message_text(session, user_id, message_text):
     async with session.begin():
         message_dal = MessageDAL(session)
-        await message_dal.create_message(user_id, message_text)
+        new_message = await message_dal.create_message(user_id, message_text)
+        return new_message.id
 
 
 async def send_request_to_gpt(person_name, message_text):
@@ -95,6 +96,12 @@ async def send_request_to_gpt(person_name, message_text):
             return await response.json()
 
 
+async def save_message_reply(session, m_id, m_response):
+    async with session.begin():
+        message_dal = MessageDAL(session)
+        await message_dal.update_message(m_id, m_response)
+
+
 @into_new_async_session
 async def user_dialog_message_actioner(
     session: AsyncSession, user_id: int, message_text: str
@@ -102,9 +109,13 @@ async def user_dialog_message_actioner(
     user_companion = await get_user_companion(session, user_id)
     if user_companion is None:
         raise UserHasNotCompanion("tic-tic")
-    await save_message_text(session, user_id, message_text)
+    m_id = await save_message_text(session, user_id, message_text)
+
     response = await send_request_to_gpt(user_companion.name, message_text)
-    return response["choices"][0]["message"]["content"]
+    response_text = response["choices"][0]["message"]["content"]
+
+    await save_message_reply(session, m_id, response_text)
+    return response_text
 
 
 @dp.message()
