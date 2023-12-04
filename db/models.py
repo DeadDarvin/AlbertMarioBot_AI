@@ -8,6 +8,7 @@ from sqlalchemy import SmallInteger
 from sqlalchemy import String
 from sqlalchemy import Text
 from sqlalchemy.orm import declarative_base
+from sqlalchemy.orm import relationship
 
 
 Base = declarative_base()
@@ -21,8 +22,8 @@ class User(Base):
     name = Column(String, nullable=True)
     surname = Column(String, nullable=True)
     registration_time = Column(DateTime, nullable=False, default=datetime.utcnow())
-    current_person_id = Column(SmallInteger, ForeignKey("persons.id"), nullable=True)
-    # current_person = relation
+    companion_id = Column(SmallInteger, ForeignKey("persons.id"), nullable=True)
+    companion = relationship("Person", uselist=False, lazy="joined")
 
 
 class Person(Base):

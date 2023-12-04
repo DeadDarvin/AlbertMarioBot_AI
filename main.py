@@ -23,6 +23,10 @@ async def _moc_amplitude():
     pass
 
 
+class UserHasNotCompanion(Exception):
+    pass
+
+
 @into_new_async_session
 async def register_new_user_if_does_not_exists(
     session: AsyncSession,
@@ -53,6 +57,43 @@ async def command_start_handler(message: Message) -> None:
         user.id, user.username, user.first_name, user.last_name
     )
     await message.answer(START_TEXT, reply_markup=START_MARKUP)
+
+
+async def get_user_companion(
+    session: AsyncSession,
+    telegram_id: int,
+):
+    async with session.begin():
+        user_dal = UserDAL(session)
+        user = await user_dal.get_user_by_id(telegram_id)
+        return user.companion
+
+
+@into_new_async_session
+async def user_dialog_message_actioner(session: AsyncSession, telegram_id: int):
+    user_companion = await get_user_companion(session, telegram_id)
+    if user_companion is None:
+        raise UserHasNotCompanion("tic-tic")
+    # await send_request_to_gpt
+
+
+@dp.message()
+async def message_handler(message: Message):
+    """
+    his handler receives any messages except '/start'
+    1. Save message_text in db if user has companion.
+    2. Send notification to Amplitude (Moc now).
+    3. Send request to OpenAI with message_text
+    4. Send notification to Amplitude (Moc now).
+    5. Send message from OpenAI to user.
+    6. Save message from OpenAI next to user_message in db.
+    7. Send notification to Amplitude (Moc now).
+    """
+    user = message.from_user
+    try:
+        await user_dialog_message_actioner(user.id)
+    except UserHasNotCompanion:
+        await message.answer("Выбери компаньона, дурень!", reply_markup=START_MARKUP)
 
 
 async def main() -> None:

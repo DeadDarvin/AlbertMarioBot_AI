@@ -32,7 +32,7 @@ class UserDAL:
         query = (
             update(User)
             .where(User.telegram_id == telegram_id)
-            .values(current_person_id=companion_id)
+            .values(companion_id=companion_id)
         )
         await self.session.execute(query)
 
