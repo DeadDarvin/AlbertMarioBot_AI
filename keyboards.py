@@ -3,7 +3,9 @@ from aiogram.types import InlineKeyboardMarkup
 from aiogram.types import WebAppInfo
 
 
-web_app = WebAppInfo(url="https://ya.ru")
+web_app = WebAppInfo(
+    url="https://deaddarvin.github.io/AlbertMarioBot_AI/web_app/web_app.html"
+)
 
 start_markup_buttons = [
     InlineKeyboardButton(text="Выбрать", web_app=web_app),
