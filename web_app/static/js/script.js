@@ -46,7 +46,7 @@ mario.addEventListener("click", () => {
     console.log(data)
     sendDataToBot(data)
     console.log("Data has been sent!")
-    tg.close();
+//    tg.close();
 });
 
 albert.addEventListener("click", () => {
@@ -58,5 +58,5 @@ albert.addEventListener("click", () => {
     }
     console.log(data)
     sendDataToBot(data)
-    tg.close();
+//    tg.close();
 });
