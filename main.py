@@ -11,6 +11,7 @@ from aiogram.types import Message
 from aiohttp import ClientSession
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from amplitude import send_notification_to_amplitude
 from db.dals import MessageDAL
 from db.dals import UserDAL
 from db.session import into_new_async_session
@@ -43,6 +44,7 @@ async def register_new_user_if_does_not_exists(
         user_dal = UserDAL(session)
         user = await user_dal.get_user_by_id(telegram_id)
         if user is None:
+            await send_notification_to_amplitude("Users Registrations", telegram_id)
             await user_dal.register_new_user(telegram_id, username, name, surname)
 
 
@@ -50,12 +52,10 @@ async def register_new_user_if_does_not_exists(
 async def command_start_handler(message: Message) -> None:
     """
     This handler receives messages with `/start` command.
-    1. Send notification to Amplitude (Moc now).
+    1. Send notification about the user-registration to Amplitude.
     2. Save user in db if user doesn't exist id db.
     3. Send start-message with WebApp-keyboard to user.
     """
-
-    await _moc_amplitude()
     user = message.from_user
     await register_new_user_if_does_not_exists(
         user.id, user.username, user.first_name, user.last_name
@@ -106,12 +106,14 @@ async def save_message_reply(session, m_id, m_response):
 async def user_dialog_message_actioner(
     session: AsyncSession, user_id: int, message_text: str
 ):
+    await send_notification_to_amplitude("Users Requests", user_id)
     user_companion = await get_user_companion(session, user_id)
     if user_companion is None:
         raise UserHasNotCompanion("tic-tic")
     m_id = await save_message_text(session, user_id, message_text)
 
     response = await send_request_to_gpt(user_companion.name, message_text)
+    await send_notification_to_amplitude("Gpt Responses", user_id)
     response_text = response["choices"][0]["message"]["content"]
 
     await save_message_reply(session, m_id, response_text)
@@ -137,6 +139,7 @@ async def message_handler(message: Message):
         await message.answer("Выбери компаньона, дурень!", reply_markup=START_MARKUP)
         return
     await message.answer(text=response_from_gpt)
+    await send_notification_to_amplitude("Responses to users", user.id)
 
 
 async def main() -> None:
