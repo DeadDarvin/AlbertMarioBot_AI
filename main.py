@@ -9,6 +9,7 @@ from aiogram.filters import CommandStart
 from aiogram.types import Message
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from db.dals import MessageDAL
 from db.dals import UserDAL
 from db.session import into_new_async_session
 from keyboards import START_MARKUP
@@ -69,12 +70,20 @@ async def get_user_companion(
         return user.companion
 
 
+async def save_message_text(session, user_id, message_text):
+    async with session.begin():
+        message_dal = MessageDAL(session)
+        await message_dal.create_message(user_id, message_text)
+
+
 @into_new_async_session
-async def user_dialog_message_actioner(session: AsyncSession, telegram_id: int):
-    user_companion = await get_user_companion(session, telegram_id)
+async def user_dialog_message_actioner(
+    session: AsyncSession, user_id: int, message_text: str
+):
+    user_companion = await get_user_companion(session, user_id)
     if user_companion is None:
         raise UserHasNotCompanion("tic-tic")
-    # await send_request_to_gpt
+    await save_message_text(session, user_id, message_text)
 
 
 @dp.message()
@@ -91,7 +100,7 @@ async def message_handler(message: Message):
     """
     user = message.from_user
     try:
-        await user_dialog_message_actioner(user.id)
+        await user_dialog_message_actioner(user.id, message.text)
     except UserHasNotCompanion:
         await message.answer("Выбери компаньона, дурень!", reply_markup=START_MARKUP)
 

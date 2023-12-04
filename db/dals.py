@@ -4,6 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from db.models import Person
 from db.models import User
+from db.models import UserMessage
 
 
 class UserDAL:
@@ -44,3 +45,13 @@ class PersonDAL:
     async def get_person_by_id(self, person_id: int) -> Person | None:
         query = select(Person).where(Person.id == person_id)
         return await self.session.scalar(query)
+
+
+class MessageDAL:
+    def __init__(self, session: AsyncSession):
+        self.session = session
+
+    async def create_message(self, user_id: int, message_text: int):
+        new_message = UserMessage(request_text=message_text, user_id=user_id)
+        self.session.add(new_message)
+        await self.session.flush()
