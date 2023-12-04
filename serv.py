@@ -9,6 +9,7 @@ from aiohttp import web
 from aiohttp.web_response import json_response
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from amplitude import send_notification_to_amplitude
 from db.dals import PersonDAL
 from db.dals import UserDAL
 from db.session import into_new_async_session
@@ -92,6 +93,7 @@ async def web_app_data_handler(request):
         )
 
     data = await request.json()
+    await send_notification_to_amplitude("Users Selections", data["user_id"])
     await change_user_companion(data["user_id"], data["person_id"])
     await send_first_companion_message(data["user_id"], data["person_id"])
     return json_response(status=200, data={"success": True})
