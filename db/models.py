@@ -1,4 +1,5 @@
 from datetime import datetime
+from uuid import uuid4
 
 from sqlalchemy import BigInteger
 from sqlalchemy import Column
@@ -7,7 +8,9 @@ from sqlalchemy import ForeignKey
 from sqlalchemy import SmallInteger
 from sqlalchemy import String
 from sqlalchemy import Text
+from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import declarative_base
+from sqlalchemy.orm import relationship
 
 
 Base = declarative_base()
@@ -21,8 +24,8 @@ class User(Base):
     name = Column(String, nullable=True)
     surname = Column(String, nullable=True)
     registration_time = Column(DateTime, nullable=False, default=datetime.utcnow())
-    current_person_id = Column(SmallInteger, ForeignKey("persons.id"), nullable=True)
-    # current_person = relation
+    companion_id = Column(SmallInteger, ForeignKey("persons.id"), nullable=True)
+    companion = relationship("Person", uselist=False, lazy="joined")
 
 
 class Person(Base):
@@ -44,7 +47,7 @@ class UserMessage(Base):
 
     __tablename__ = "user_messages"
 
-    message_id = Column(BigInteger, primary_key=True)
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
     request_text = Column(Text, nullable=False)
     response_text = Column(Text, nullable=True)
     user_id = Column(BigInteger, ForeignKey("users.telegram_id"), nullable=False)
