@@ -1,4 +1,5 @@
 import asyncio
+import json
 import logging
 import sys
 
@@ -7,6 +8,7 @@ from aiogram import Dispatcher
 from aiogram.enums import ParseMode
 from aiogram.filters import CommandStart
 from aiogram.types import Message
+from aiohttp import ClientSession
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from db.dals import MessageDAL
@@ -14,6 +16,7 @@ from db.dals import UserDAL
 from db.session import into_new_async_session
 from keyboards import START_MARKUP
 from settings import BOT_TOKEN
+from settings import GPT_API_URL
 from texts import START_TEXT
 
 
@@ -76,6 +79,22 @@ async def save_message_text(session, user_id, message_text):
         await message_dal.create_message(user_id, message_text)
 
 
+async def send_request_to_gpt(person_name, message_text):
+    content = (
+        f"Instructions: You are {person_name}. Do not give dangerous information."
+        f"User message: {message_text}"
+    )
+    data = {
+        "model": "gpt-3.5-turbo",
+        "messages": [{"role": "user", "content": content}],
+    }
+    async with ClientSession() as session:
+        async with session.post(
+            url=GPT_API_URL, ssl=False, data=json.dumps(data)
+        ) as response:
+            return await response.json()
+
+
 @into_new_async_session
 async def user_dialog_message_actioner(
     session: AsyncSession, user_id: int, message_text: str
@@ -84,6 +103,8 @@ async def user_dialog_message_actioner(
     if user_companion is None:
         raise UserHasNotCompanion("tic-tic")
     await save_message_text(session, user_id, message_text)
+    response = await send_request_to_gpt(user_companion.name, message_text)
+    return response["choices"][0]["message"]["content"]
 
 
 @dp.message()
@@ -100,9 +121,11 @@ async def message_handler(message: Message):
     """
     user = message.from_user
     try:
-        await user_dialog_message_actioner(user.id, message.text)
+        response_from_gpt = await user_dialog_message_actioner(user.id, message.text)
     except UserHasNotCompanion:
         await message.answer("Выбери компаньона, дурень!", reply_markup=START_MARKUP)
+        return
+    await message.answer(text=response_from_gpt)
 
 
 async def main() -> None:

@@ -23,7 +23,7 @@ def into_new_async_session(function):
     async def wrapper(*args, **kwargs):
         session: AsyncSession = async_session()
         try:
-            await function(session, *args, **kwargs)
+            return await function(session, *args, **kwargs)
         finally:
             await session.close()
 

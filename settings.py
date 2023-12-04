@@ -1,6 +1,7 @@
 from envparse import Env
 
 from dev_secrets import BOT_TOKEN
+from dev_secrets import GPT_API_URL
 
 env = Env()
 
@@ -17,3 +18,9 @@ REAL_DATABASE_URL = env.str(
     "REAL_DATABASE_URL",
     default="postgresql+asyncpg://postgres:postgres@0.0.0.0:5444/postgres",
 )
+
+
+####################
+# API DATA
+####################
+GPT_API_URL = env.str("GPT_API_URL", default=GPT_API_URL)
