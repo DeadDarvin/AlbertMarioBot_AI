@@ -11,9 +11,10 @@ from amplitude import send_notification_to_amplitude
 from bot.constans.keyboards import START_MARKUP
 from bot.constans.texts import CHANGE_PERSON_TEXT
 from bot.constans.texts import START_TEXT
-from bot.logic_layer.logic import register_new_user_if_does_not_exists
-from bot.logic_layer.logic import user_dialog_message_actioner
-from bot.logic_layer.logic import UserHasNotCompanion
+from bot.logic_layer.actioners import register_new_user_if_does_not_exists
+from bot.logic_layer.actioners import user_dialog_message_actioner
+from bot.logic_layer.exc import GPTConnectionError
+from bot.logic_layer.exc import UserHasNotCompanionError
 
 
 dp = Dispatcher()
@@ -58,8 +59,9 @@ async def message_handler(message: Message):
     user = message.from_user
     try:
         response_from_gpt = await user_dialog_message_actioner(user.id, message.text)
-    except UserHasNotCompanion:
+        await message.answer(text=response_from_gpt)
+        await send_notification_to_amplitude("Responses to users", user.id)
+    except UserHasNotCompanionError:
         await message.answer("Выбери компаньона, дурень!", reply_markup=START_MARKUP)
-        return
-    await message.answer(text=response_from_gpt)
-    await send_notification_to_amplitude("Responses to users", user.id)
+    except GPTConnectionError:
+        await message.answer("Ошибка на стороне OpenAI. Попробуйте позже!")

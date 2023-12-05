@@ -1,5 +1,6 @@
 from functools import wraps
 
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy.orm import sessionmaker
@@ -24,6 +25,8 @@ def into_new_async_session(function):
         session: AsyncSession = async_session()
         try:
             return await function(session, *args, **kwargs)
+        except SQLAlchemyError as err:
+            print(f"Logger here: {err}")
         finally:
             await session.close()
 
