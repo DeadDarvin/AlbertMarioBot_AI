@@ -23,4 +23,4 @@ for route in list(app.router.routes()):
 
 
 if __name__ == "__main__":
-    web.run_app(app=app, host="127.0.0.1", port=8080)
+    web.run_app(app=app, host="0.0.0.0", port=8000)

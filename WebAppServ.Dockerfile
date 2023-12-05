@@ -20,7 +20,8 @@ RUN python3 -m pip install --user --upgrade pip && \
 
 COPY . .
 WORKDIR .
-EXPOSE 8000
+EXPOSE 8080
+ENV PYTHONPATH "./"
 
 # Execute
-CMD ["python", "main.py"]
+CMD ["python", "web_app_server/main.py"]

@@ -20,7 +20,7 @@ RUN python3 -m pip install --user --upgrade pip && \
 
 COPY . .
 WORKDIR .
-EXPOSE 8000
+ENV PYTHONPATH "./"
 
 # Execute
-CMD ["python", "main.py"]
+CMD ["python", "bot/main.py"]
