@@ -51,11 +51,17 @@ async def message_handler(message: Message):
     Try to response to user through gpt.
     Handle system-logic-exceptions.
     """
-    user = message.from_user
+    user_id = message.from_user.id
+    message_text = message.text
+    if message_text is None:
+        await message.answer(
+            "Пожалуйста, напиши мне что-нибудь! Я понимаю только слова"
+        )
+        return
     try:
-        response_from_gpt = await user_dialog_message_actioner(user.id, message.text)
+        response_from_gpt = await user_dialog_message_actioner(user_id, message.text)
         await message.answer(text=response_from_gpt)
-        await send_notification_to_amplitude("Responses to users", user.id)
+        await send_notification_to_amplitude("Responses to users", user_id)
     except UserHasNotCompanionError:
         await message.answer("Выбери компаньона, дурень!", reply_markup=START_MARKUP)
     except GPTConnectionError as err:
