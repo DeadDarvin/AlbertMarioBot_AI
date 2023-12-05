@@ -8,8 +8,11 @@ from aiogram.filters import CommandStart
 from aiogram.types import Message
 
 from amplitude import send_notification_to_amplitude
-from bot.constans.keyboards import START_MARKUP
+from bot.constans.keyboards import PERSON_SELECTION_MARKUP
+from bot.constans.texts import BAD_MESSAGE_TEXT
 from bot.constans.texts import CHANGE_PERSON_TEXT
+from bot.constans.texts import OPEN_AI_ERROR_TEXT
+from bot.constans.texts import SELECT_PERSON_TEXT
 from bot.constans.texts import START_TEXT
 from bot.logic_layer.actioners import register_new_user_if_does_not_exists
 from bot.logic_layer.actioners import user_dialog_message_actioner
@@ -32,7 +35,7 @@ async def command_start_handler(message: Message) -> None:
     await register_new_user_if_does_not_exists(
         user.id, user.username, user.first_name, user.last_name
     )
-    await message.answer(START_TEXT, reply_markup=START_MARKUP)
+    await message.answer(START_TEXT, reply_markup=PERSON_SELECTION_MARKUP)
 
 
 @dp.message(Command("menu"))
@@ -41,7 +44,7 @@ async def command_menu_handler(message: Message) -> None:
     This handler receives messages with `/menu` command.
     Send WebApp button to user with text.
     """
-    await message.answer(CHANGE_PERSON_TEXT, reply_markup=START_MARKUP)
+    await message.answer(CHANGE_PERSON_TEXT, reply_markup=PERSON_SELECTION_MARKUP)
 
 
 @dp.message()
@@ -54,19 +57,17 @@ async def message_handler(message: Message):
     user_id = message.from_user.id
     message_text = message.text
     if message_text is None:
-        await message.answer(
-            "Пожалуйста, напиши мне что-нибудь! Я понимаю только слова"
-        )
+        await message.answer(BAD_MESSAGE_TEXT)
         return
     try:
         response_from_gpt = await user_dialog_message_actioner(user_id, message.text)
         await message.answer(text=response_from_gpt)
         await send_notification_to_amplitude("Responses to users", user_id)
     except UserHasNotCompanionError:
-        await message.answer("Выбери компаньона, дурень!", reply_markup=START_MARKUP)
+        await message.answer(SELECT_PERSON_TEXT, reply_markup=PERSON_SELECTION_MARKUP)
     except GPTConnectionError as err:
         print(f"Logger here: GPTConnectionError -- {err}")
-        await message.answer("Ошибка на стороне OpenAI. Попробуйте позже!")
+        await message.answer(OPEN_AI_ERROR_TEXT)
     except Exception as err:
         print(f"Logger here: Unhandled error -- {err}")
         await message.answer("Что-то пошло не так!")

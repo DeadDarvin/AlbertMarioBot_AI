@@ -10,7 +10,10 @@ env = Env()
 # BOT DATA
 ####################
 BOT_TOKEN = env.str("BOT_TOKEN", default=BOT_TOKEN)
-
+WEB_APP_URL = env.str(
+    "WEB_APP_URL",
+    default="https://deaddarvin.github.io/AlbertMarioBot_AI/web_app/web_app.html",
+)
 
 ####################
 # DATABASE DATA
