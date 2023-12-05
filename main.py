@@ -6,6 +6,7 @@ import sys
 from aiogram import Bot
 from aiogram import Dispatcher
 from aiogram.enums import ParseMode
+from aiogram.filters import Command
 from aiogram.filters import CommandStart
 from aiogram.types import Message
 from aiohttp import ClientSession
@@ -18,6 +19,7 @@ from db.session import into_new_async_session
 from keyboards import START_MARKUP
 from settings import BOT_TOKEN
 from settings import GPT_API_URL
+from texts import CHANGE_PERSON_TEXT
 from texts import START_TEXT
 
 
@@ -61,6 +63,15 @@ async def command_start_handler(message: Message) -> None:
         user.id, user.username, user.first_name, user.last_name
     )
     await message.answer(START_TEXT, reply_markup=START_MARKUP)
+
+
+@dp.message(Command("menu"))
+async def command_menu_handler(message: Message) -> None:
+    """
+    This handler receives messages with `/menu` command.
+    Send WebApp button to user with text.
+    """
+    await message.answer(CHANGE_PERSON_TEXT, reply_markup=START_MARKUP)
 
 
 async def get_user_companion(
