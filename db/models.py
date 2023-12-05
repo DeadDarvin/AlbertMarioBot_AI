@@ -51,4 +51,3 @@ class UserMessage(Base):
     request_text = Column(Text, nullable=False)
     response_text = Column(Text, nullable=True)
     user_id = Column(BigInteger, ForeignKey("users.telegram_id"), nullable=False)
-    # user = relation
