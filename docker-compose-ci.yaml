@@ -1,0 +1,59 @@
+version: "3.0"
+services:
+  db:
+    container_name: "db"
+    image: postgres:14.1-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=postgres
+    ports:
+      - "127.0.0.1:5444:5432"
+    networks:
+      - custom
+
+  bot:
+    container_name: bot
+    image: bot # Specify the name of the Docker image to be built
+    restart: always
+    depends_on:
+      - db
+    environment:
+      REAL_DATABASE_URL: "postgresql+asyncpg://postgres:postgres@db:5432/postgres"
+      BOT_TOKEN:
+      WEB_APP_URL:
+      GPT_API_URL:
+      AMPLITUDE_API_KEY:
+    build:
+      context: .
+      dockerfile: Bot.Dockerfile
+    ports:
+      - "127.0.0.1:8000:8000"
+    networks:
+      - custom
+
+  web_app_serv:
+    container_name: web_app_serv
+    image: web_app_serv # Specify the name of the Docker image to be built
+    restart: always
+    depends_on:
+      - db
+      - bot
+    environment:
+      REAL_DATABASE_URL: "postgresql+asyncpg://postgres:postgres@db:5432/postgres"
+      BOT_TOKEN:
+      WEB_APP_URL:
+      GPT_API_URL:
+      AMPLITUDE_API_KEY:
+    build:
+      context: .
+      dockerfile: WebAppServ.Dockerfile
+    ports:
+      - "127.0.0.1:8000:8000"
+    networks:
+      - custom
+
+networks:
+  custom:
+    driver: bridge
