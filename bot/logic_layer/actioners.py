@@ -7,7 +7,6 @@ import asyncio
 from aiohttp.client_exceptions import ClientError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from amplitude import send_notification_to_amplitude
 from bot.logic_layer.db_api import get_user_by_id
 from bot.logic_layer.db_api import register_new_user
 from bot.logic_layer.db_api import save_message_reply
@@ -16,6 +15,7 @@ from bot.logic_layer.exc import GPTConnectionError
 from bot.logic_layer.exc import UserHasNotCompanionError
 from bot.logic_layer.gpt_request import send_request_to_gpt
 from db.session import into_new_async_session
+from utils.amplitude_request import send_notification_to_amplitude
 
 
 @into_new_async_session

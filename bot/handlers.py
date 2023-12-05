@@ -9,7 +9,6 @@ from aiogram.filters import Command
 from aiogram.filters import CommandStart
 from aiogram.types import Message
 
-from amplitude import send_notification_to_amplitude
 from bot.constans.keyboards import PERSON_SELECTION_MARKUP
 from bot.constans.texts import BAD_MESSAGE_TEXT
 from bot.constans.texts import CHANGE_PERSON_TEXT
@@ -20,6 +19,7 @@ from bot.logic_layer.actioners import register_new_user_if_does_not_exists
 from bot.logic_layer.actioners import user_dialog_message_actioner
 from bot.logic_layer.exc import GPTConnectionError
 from bot.logic_layer.exc import UserHasNotCompanionError
+from utils.amplitude_request import send_notification_to_amplitude
 
 
 dp = Dispatcher()

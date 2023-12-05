@@ -3,9 +3,9 @@ import asyncio
 from aiohttp import ClientSession
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from amplitude import send_notification_to_amplitude
 from db.session import into_new_async_session
 from settings import BOT_TOKEN
+from utils.amplitude_request import send_notification_to_amplitude
 from web_app_server.logic_layer.db_api import change_user_companion
 from web_app_server.logic_layer.db_api import get_person_first_message_by_id
 
