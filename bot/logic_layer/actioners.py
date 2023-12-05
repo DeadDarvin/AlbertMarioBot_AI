@@ -2,6 +2,8 @@
 This file contains general-logic actioners
 for calling from handlers
 """
+import asyncio
+
 from aiohttp.client_exceptions import ClientError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -26,7 +28,9 @@ async def register_new_user_if_does_not_exists(
 ):
     user = await get_user_by_id(session, telegram_id)
     if user is None:
-        await send_notification_to_amplitude("Users Registrations", telegram_id)
+        asyncio.create_task(
+            send_notification_to_amplitude("Users Registrations", telegram_id)
+        )
         await register_new_user(session, telegram_id, username, name, surname)
 
 
@@ -43,7 +47,7 @@ async def user_dialog_message_actioner(
     5. Save message from gpt next to user_message in db.
     :return: response from gpt
     """
-    await send_notification_to_amplitude("Users Requests", telegram_id)
+    asyncio.create_task(send_notification_to_amplitude("Users Requests", telegram_id))
 
     user = await get_user_by_id(session, telegram_id)
     user_companion = user.companion
@@ -59,7 +63,7 @@ async def user_dialog_message_actioner(
     except ClientError as err:
         raise GPTConnectionError(err)
 
-    await send_notification_to_amplitude("Gpt Responses", telegram_id)
+    asyncio.create_task(send_notification_to_amplitude("Gpt Responses", telegram_id))
     response_text = response["choices"][0]["message"]["content"]
 
     await save_message_reply(session, message_id, response_text)

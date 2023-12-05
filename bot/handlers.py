@@ -2,6 +2,8 @@
 This file contains all handlers of the bot.
 Handlers can only call methods from 'logic_layer' folder
 """
+import asyncio
+
 from aiogram import Dispatcher
 from aiogram.filters import Command
 from aiogram.filters import CommandStart
@@ -61,8 +63,10 @@ async def message_handler(message: Message):
         return
     try:
         response_from_gpt = await user_dialog_message_actioner(user_id, message.text)
+        asyncio.create_task(
+            send_notification_to_amplitude("Responses to users", user_id)
+        )
         await message.answer(text=response_from_gpt)
-        await send_notification_to_amplitude("Responses to users", user_id)
     except UserHasNotCompanionError:
         await message.answer(SELECT_PERSON_TEXT, reply_markup=PERSON_SELECTION_MARKUP)
     except GPTConnectionError as err:
