@@ -47,14 +47,9 @@ async def command_menu_handler(message: Message) -> None:
 @dp.message()
 async def message_handler(message: Message):
     """
-    This handler receives any messages except '/start' and '/menu'
-    1. Save message_text in db if user has companion.
-    2. Send notification to Amplitude (Moc now).
-    3. Send request to OpenAI with message_text
-    4. Send notification to Amplitude (Moc now).
-    5. Send message from OpenAI to user.
-    6. Save message from OpenAI next to user_message in db.
-    7. Send notification to Amplitude (Moc now).
+    This handler receives any messages except '/start' and '/menu'.
+    Try to response to user through gpt.
+    Handle system-logic-exceptions.
     """
     user = message.from_user
     try:
@@ -63,5 +58,9 @@ async def message_handler(message: Message):
         await send_notification_to_amplitude("Responses to users", user.id)
     except UserHasNotCompanionError:
         await message.answer("Выбери компаньона, дурень!", reply_markup=START_MARKUP)
-    except GPTConnectionError:
+    except GPTConnectionError as err:
+        print(f"Logger here: GPTConnectionError -- {err}")
         await message.answer("Ошибка на стороне OpenAI. Попробуйте позже!")
+    except Exception as err:
+        print(f"Logger here: Unhandled error -- {err}")
+        await message.answer("Что-то пошло не так!")

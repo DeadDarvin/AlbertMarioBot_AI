@@ -1,3 +1,7 @@
+"""
+This file contains general-logic actioners
+for calling from handlers
+"""
 from aiohttp.client_exceptions import ClientError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -30,6 +34,15 @@ async def register_new_user_if_does_not_exists(
 async def user_dialog_message_actioner(
     session: AsyncSession, telegram_id: int, message_text: str
 ):
+    """
+    General logic-scope for handling user-message through gpt.
+    1. Send notification to Amplitude about request from user.
+    2. Save message_text in db if user has companion.
+    3. Send request to OpenAI with message_text
+    4. Send notification to Amplitude about response from gpt.
+    5. Save message from gpt next to user_message in db.
+    :return: response from gpt
+    """
     await send_notification_to_amplitude("Users Requests", telegram_id)
 
     user = await get_user_by_id(session, telegram_id)
