@@ -10,17 +10,17 @@ from aiogram.filters import Command
 from aiogram.filters import CommandStart
 from aiogram.types import Message
 from aiohttp import ClientSession
+from keyboards import START_MARKUP
 from sqlalchemy.ext.asyncio import AsyncSession
+from texts import CHANGE_PERSON_TEXT
+from texts import START_TEXT
 
 from amplitude import send_notification_to_amplitude
 from db.dals import MessageDAL
 from db.dals import UserDAL
 from db.session import into_new_async_session
-from keyboards import START_MARKUP
 from settings import BOT_TOKEN
 from settings import GPT_API_URL
-from texts import CHANGE_PERSON_TEXT
-from texts import START_TEXT
 
 
 dp = Dispatcher()
