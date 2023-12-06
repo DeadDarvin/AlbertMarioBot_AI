@@ -3,7 +3,7 @@ tg.expand();
 
 let user_id = tg.initDataUnsafe.user.id;
 
-const url = "https://9c1e-91-105-181-137.ngrok-free.app";
+const url = "http://185.84.162.213:8080";
 const headers = {
     'Content-Type': 'application/json',
     'Authorization': tg.initDataUnsafe.hash,
