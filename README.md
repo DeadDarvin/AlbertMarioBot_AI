@@ -1,8 +1,9 @@
 # AlbertMarioBot_AI
 Test task from MindFusion. Bot for talking with Mario or Albert Einstein persons. Uses GPT-3.5
 
-# Техническое задание:
+## [Бот здесь](https://t.me/AlbertMarioBot)
 
+# Техническое задание:
 
 ### 1. /start (Стартовое сообщение):
 1. Отправляем событие регистрации пользователя ***(Amplitude)***
@@ -29,5 +30,4 @@ Test task from MindFusion. Bot for talking with Mario or Albert Einstein persons
 
 
 ## Идеи:
-1. Хранить user_person не в таблицы юзера, а сделать отдельную (типа ManyToMany с ограничениями). Насколько нужно?
-2. Прикрутить redis {"user_id": "person"} для оптимизации
+1. Прикрутить redis {"user_id": "person"} для оптимизации
